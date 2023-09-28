@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CourseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constarints as Assert;
 
@@ -35,10 +37,14 @@ class Course
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
 
-    // #[ORM\ManyToOne(inversedBy: 'courses')]
-    // #[ORM\JoinColumn(nullable: false)]
-    // private ?category $category = null;
+    #[ORM\ManyToOne(inversedBy: 'Courses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
 
+    
+
+       
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -116,15 +122,19 @@ class Course
         return $this;
     }
 
-    // public function getCategory(): ?category
-    // {
-    //     return $this->category;
-    // }
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
 
-    // public function setCategory(?category $category): static
-    // {
-    //     $this->category = $category;
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
-    //     return $this;
-    // }
+        return $this;
+    }
+
+    
+
+    
 }

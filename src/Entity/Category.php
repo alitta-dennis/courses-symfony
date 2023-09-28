@@ -1,76 +1,90 @@
 <?php
 
-// namespace App\Entity;
+namespace App\Entity;
 
-// use App\Repository\CategoryRepository;
-// use Doctrine\Common\Collections\ArrayCollection;
-// use Doctrine\Common\Collections\Collection;
-// use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-// #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-// class Category
-// {
-//     #[ORM\Id]
-//     #[ORM\GeneratedValue]
-//     #[ORM\Column]
-//     private ?int $id = null;
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
+class Category
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-//     #[ORM\Column(length: 255)]
-//     private ?string $name = null;
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
 
-//     #[ORM\OneToMany(mappedBy: 'C
-//     ategory', targetEntity: Course::class)]
-//     private Collection $courses;
+    
+    private ?Course $course = null;
 
-//     public function __construct()
-//     {
-//         $this->courses = new ArrayCollection();
-//     }
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Course::class)]
+    private Collection $Courses;
 
-//     public function getId(): ?int
-//     {
-//         return $this->id;
-//     }
+    public function __construct()
+    {
+        $this->Courses = new ArrayCollection();
+    }
 
-//     public function getName(): ?string
-//     {
-//         return $this->name;
-//     }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-//     public function setName(string $name): static
-//     {
-//         $this->name = $name;
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 
-//         return $this;
-//     }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-//     /**
-//      * @return Collection<int, Course>
-//      */
-//     public function getCourses(): Collection
-//     {
-//         return $this->courses;
-//     }
+        return $this;
+    }
 
-//     public function addCourse(Course $course): static
-//     {
-//         if (!$this->courses->contains($course)) {
-//             $this->courses->add($course);
-//             $course->setCategory($this);
-//         }
+    public function getCourse(): ?Course
+    {
+        return $this->course;
+    }
 
-//         return $this;
-//     }
+    public function setCourse(?Course $course): static
+    {
+        $this->course = $course;
 
-//     public function removeCourse(Course $course): static
-//     {
-//         if ($this->courses->removeElement($course)) {
-//             // set the owning side to null (unless already changed)
-//             if ($course->getCategory() === $this) {
-//                 $course->setCategory(null);
-//             }
-//         }
+        return $this;
+    }
 
-//         return $this;
-//     }
-// }
+    /**
+     * @return Collection<int, Course>
+     */
+    public function getCourses(): Collection
+    {
+        return $this->Courses;
+    }
+
+    public function addCourse(Course $course): static
+    {
+        if (!$this->Courses->contains($course)) {
+            $this->Courses->add($course);
+            $course->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCourse(Course $course): static
+    {
+        if ($this->Courses->removeElement($course)) {
+            // set the owning side to null (unless already changed)
+            if ($course->getCategory() === $this) {
+                $course->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+}

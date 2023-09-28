@@ -44,8 +44,10 @@ class SecurityController extends AbstractController
 
         //Generate token
         $token=$this->jwt->create($user);
+
+        //Store token in response
         $response=new JsonResponse(['message'=>'Login Successful'],200);
-        $response->headers->set('Authorization', 'Bearer ' .$token);
+        $response->headers->set('Authorization', 'Bearer ' . $token);
         return $response;
         // $password = $data['password']; // Get the password from the request data
         // $roles = $user->getRoles(); // Convert the single role to an array
