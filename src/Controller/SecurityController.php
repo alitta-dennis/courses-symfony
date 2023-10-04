@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface; // Import the new interface
 use App\Entity\User;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,6 +13,11 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
+
 
 class SecurityController extends AbstractController
 {
@@ -23,10 +29,27 @@ class SecurityController extends AbstractController
         $this->em = $em;
         $this->jwt=$jwt;
     }
-
-    /**
-     * @Route("/api/login", name="app_login", methods={"POST"})
+     /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Login Successful",
+     *     @Model(type=User::class)
+     * ),
+     * @OA\Response(
+     *     response=404,
+     *     description="User not found."
+     * ),
+     * @OA\Response(
+     *     response=401,
+     *     description="Invalid password"
+     * )
+     * @OA\Tag(name="Login")
+     * @Route("/api/login", name="login", methods={"POST"})
      */
+
+    // /**
+    //  * @Route("/api/login", name="app_login", methods={"POST"})
+    //  */
     public function login(Request $request, UserPasswordHasherInterface $pwd, TokenStorageInterface $tokenStorage): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -42,6 +65,7 @@ class SecurityController extends AbstractController
             return new JsonResponse(['message' => 'Invalid password'], 401);
         }
 
+        
         //Generate token
         $token=$this->jwt->create($user);
 
@@ -60,10 +84,19 @@ class SecurityController extends AbstractController
         // return new JsonResponse(['message' => 'Login successful'], 200);
     }
 
-
     /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Logged Out",
+     *     @Model(type=User::class)
+     * )
+     * @OA\Tag(name="Logout")
      * @Route("/api/logout", name="logout", methods={"POST"})
      */
+
+    // /**
+    //  * @Route("/api/logout", name="logout", methods={"POST"})
+    //  */
     public function logout(): JsonResponse
     {
         // Symfony's security system will automatically handle logout, so you don't need to implement a logout action.

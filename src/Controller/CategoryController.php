@@ -8,6 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
+
 class CategoryController extends AbstractController
 {
     private $em;
@@ -19,7 +23,17 @@ class CategoryController extends AbstractController
         $this->categoryRepository=$categoryRepository;
     }
     
-    #[Route('/api/category', name: 'app_category', methods:['GET'])]
+     #[Route('/api/category', name: 'app_category', methods:['GET'])]
+    //  /**
+    //  * @OA\Response(
+    //  *     response=200,
+    //  *     description="List of categories",
+    //  *     @Model(type=Category::class)
+    //  * )
+    //  * @OA\Tag(name="Categories")
+    //  * @Security(name="Bearer")
+    //  * @Route("/api/category", name="get_categories", methods={"GET"})
+    //  */
     public function getCategory(): JsonResponse
     {
         $categories=$this->categoryRepository->findAll();
@@ -34,10 +48,35 @@ class CategoryController extends AbstractController
         return new JsonResponse($data);
     }
 
-    #[Route('/api/category/{id}', name: 'category', methods:['GET'])]
+    // #[Route('/api/category/{id}', name: 'category', methods:['GET'])]
+     /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Courses that belong to selected category",
+     *     @OA\JsonContent(
+     *          type="array",
+     *          @OA\Items(
+     *               type="object",
+     *                @OA\Property(property="id",type="integer"),
+     *                @OA\Property(property="courseName",type="string"),
+     *                @OA\Property(property="courseCode",type="string"),
+     *                @OA\Property(property="price",type="number"),
+     *                 
+     *                ))
+     * )
+     * @OA\Parameter(
+     *      name="Id",
+     *      in="path",
+     *       required=true,
+     *       description="Category Id",
+     *        @OA\Schema(type="integer"))
+     * @OA\Tag(name="Categories")
+     * @Security(name="Bearer")
+     * @Route("/api/category/{id}", name="category", methods={"GET"})
+     */
     public function getCoursesbyCategory($id)
     {
-        $categories=$this->categoryRepository->findId($id);
+        $categories=$this->categoryRepository->find($id);
         $courses=$categories->getCourses();
 
         $coursesArray=[];

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 use App\Entity\Course;
+use App\Entity\Category;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,6 +12,9 @@ use App\Repository\CourseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 
 class CourseController extends AbstractController
 {   
@@ -21,10 +25,24 @@ class CourseController extends AbstractController
         $this->courseRepository=$courseRepository;
         $this->em=$em;
     }
-    #[Route('/api/courses', name: 'courses',methods:['GET'])]
+    // #[Route('/api/courses', name: 'courses',methods:['GET'])]
+
+     /**
+     * @OA\Response(
+     *     response=200,
+     *     description="List of courses",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses", name="get_courses", methods={"GET"})
+     */
     public function getCourses(): JsonResponse
-    {
+    {   
+        
+        
         $courses=$this->courseRepository->findAll();
+        
 
         $coursesArray=[];
         foreach ($courses as $course ){
@@ -34,7 +52,18 @@ class CourseController extends AbstractController
         return new JsonResponse($coursesArray);
     }
 
-    #[Route('/api/courses/{id}', name: 'courses_get',methods:['GET'])]
+    // #[Route('/api/courses/{id}', name: 'courses_get',methods:['GET'])]
+
+     /**
+     * @OA\Response(
+     *     response=201,
+     *     description="Details of the selected course",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses/{id}", name="get_course", methods={"GET"})
+     */
     public function getCourse($id):JsonResponse
     {
         $courses=$this->courseRepository->find($id);
@@ -43,7 +72,31 @@ class CourseController extends AbstractController
 
     }
 
-    #[Route('/api/courses',name:'create_course',methods:['POST'])]
+    // #[Route('/api/courses',name:'create_course',methods:['POST'])]
+    /**
+     * @OA\Response(
+     *     response=201,
+     *     description="Creates a new Course",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *         type="object",
+     *         @OA\Property(property="courseName", type="string"),
+     *         @OA\Property(property="courseCode", type="string"),
+     *         @OA\Property(property="startDate", type="string", format="date"),
+     *         
+     *         @OA\Property(property="price", type="number"),
+     *         @OA\Property(property="starRating", type="number"),
+     *         @OA\Property(property="categoryName", type="string"),
+     *         @OA\Property(property="image", type="string", format="binary"),
+     *     )
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses", name="create_course", methods={"POST"})
+     */
     public function createCourse(Request $request):JsonResponse{
         
        
@@ -56,6 +109,7 @@ class CourseController extends AbstractController
         // $course->setStartDate($data['startDate']);
         // $course->setPrice($data['price']);
         // $course->setStarRating($data['starRating']);
+
         // $course->setImageUrl($data['imageUrl']);
 
         $baseUrl="http://127.0.0.1:8000";
@@ -65,6 +119,8 @@ class CourseController extends AbstractController
         $startDate=$request->request->get('startDate');
         $price=$request->request->get('price');
         $starRating=$request->request->get('starRating');
+        $categoryName=$request->request->get('categoryName');
+        $category=$this->em->getRepository(Category::class)->findOneBy(['name'=>$categoryName]);
         
         $img=$request->files->get('image');
 
@@ -91,6 +147,9 @@ class CourseController extends AbstractController
         $course->setPrice($price);
         $course->setStarRating($starRating);
         $course->setImageUrl($imageUrl);
+        $course->setCategory($category);
+
+        
 
         $this->em->persist($course);
         $this->em->flush();
@@ -98,8 +157,40 @@ class CourseController extends AbstractController
         return new JsonResponse(['message'=>'Course Created'],JsonResponse::HTTP_CREATED);
     }
 
-    #[Route('/api/courses/{id}',name:'edit',methods:['PUT'])]
+    // #[Route('/api/courses/{id}',name:'edit',methods:['PUT'])]
+    /**
+     * @OA\Response(
+     *     response=201,
+     *     description="Edits a Course when image is not being changed",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *         type="object",
+     *         @OA\Property(property="courseName", type="string"),
+     *         @OA\Property(property="courseCode", type="string"),
+     *         @OA\Property(property="startDate", type="string", format="date"),
+     *         
+     *         @OA\Property(property="price", type="number"),
+     *         @OA\Property(property="starRating", type="number"),
+     *         @OA\Property(property="categoryName", type="string"),
+     *         @OA\Property(property="categoryId", type="integer"),
+     *         @OA\Property(property="image", type="string", format="binary"),
+     *         
+     *     )
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses/{id}", name="edit_course", methods={"PUT"})
+     */
+
      public function editCourse($id,Request $request):JsonResponse{
+
+        $user=$this->getUser();
+        if(!$user){
+            return $this->json(['message'=>'Invalid User','user'=>$user],401);
+        }
 
         $data = json_decode($request->getContent(), true);
         $courses=$this->courseRepository->find($id);
@@ -109,18 +200,54 @@ class CourseController extends AbstractController
         $courses->setstartDate($data['startDate']);
         $courses->setprice($data['price']);
         $courses->setstarRating($data['starRating']);
+        $courses->setImageUrl($data['imageUrl']);
+        
+        
+        $categoryName=$request->request->get('categoryName');
+        $category=$this->em->getRepository(Category::class)->findOneBy(['name'=>$categoryName]);
+        $courses->setCategory($category);
 
+        $categoryId=$data['categoryId'];
+        $category=$this->em->getRepository(Category::class)->find($categoryId);
+        $courses->setCategory($category);
+    
         $this->em->flush();
-        return new JsonResponse(['message'=>'Course Edited'],JsonResponse::HTTP_CREATED);
+        return new JsonResponse(['message'=>'Course Edited','user'=>$user], JsonResponse::HTTP_CREATED);
     }
 
-    #[Route('/api/courses/img/{id}',name:'edit_img',methods:['PUT'])]
+    // #[Route('/api/courses/img/{id}',name:'edit_img',methods:['POST'])]
+
+    /**
+     * @OA\Response(
+     *     response=201,
+     *     description="Edits a Course when image is being changed",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *         type="object",
+     *         @OA\Property(property="courseName", type="string"),
+     *         @OA\Property(property="courseCode", type="string"),
+     *         @OA\Property(property="startDate", type="string", format="date"),
+     *         
+     *         @OA\Property(property="price", type="number"),
+     *         @OA\Property(property="starRating", type="number"),
+     *         @OA\Property(property="categoryName", type="string"),
+     *         @OA\Property(property="categoryId", type="integer"),
+     *         @OA\Property(property="image", type="string", format="binary"),
+     *     )
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses/img/{id}", name="edit_coursewithimg", methods={"POST"})
+     */
     public function editWithImg($id, Request $request):JsonResponse
     {
         $courses=$this->courseRepository->find($id);
 
         if(!$courses){
-            return new JsonResponse(['error'=>'Product not found'],Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['error'=>'Course not found'],Response::HTTP_NOT_FOUND);
         }
 
         $coursename=$request->request->get('courseName');
@@ -166,7 +293,18 @@ class CourseController extends AbstractController
         return new JsonResponse(['message'=>'Course Edited'],JsonResponse::HTTP_OK);
     }
 
-    #[Route('/api/courses/{id}',name:'delete',methods:['GET','DELETE'])]
+    // #[Route('/api/courses/{id}',name:'delete',methods:['GET','DELETE'])]
+    /**
+     * @OA\Response(
+     *     response=200,
+     *     description="Delete a courses",
+     *     @Model(type=Course::class)
+     * )
+     * @OA\Tag(name="Courses")
+     * @Security(name="Bearer")
+     * @Route("/api/courses/{id}", name="delete", methods={"DELETE"})
+     */
+
     public function deleteCourse($id):Response{
 
         $courses=$this->courseRepository->find($id);
@@ -187,6 +325,7 @@ class CourseController extends AbstractController
             'price'=>$course->getPrice(),
             'starRating'=>$course->getStarRating(),
             'imageUrl'=>$course->getImageUrl(),
+            'category'=>$course->getCategory()
 
         ];
     }

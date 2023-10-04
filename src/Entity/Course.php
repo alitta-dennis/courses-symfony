@@ -37,10 +37,21 @@ class Course
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageUrl = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Courses')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'course')]
+    //#[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
+
+    #[ORM\ManyToMany(targetEntity: Cart::class, mappedBy: 'Course')]
+    private Collection $carts;
+
+    public function __construct()
+    {
+        $this->carts = new ArrayCollection();
+    }
+    
+
+   
     
 
        
@@ -60,6 +71,11 @@ class Course
         $this->courseName = $courseName;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->courseName; // Assuming 'name' is the property to display
     }
 
     public function getCourseCode(): ?string
@@ -134,6 +150,34 @@ class Course
         return $this;
     }
 
+    /**
+     * @return Collection<int, Cart>
+     */
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function addCart(Cart $cart): static
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts->add($cart);
+            $cart->addCourse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCart(Cart $cart): static
+    {
+        if ($this->carts->removeElement($cart)) {
+            $cart->removeCourse($this);
+        }
+
+        return $this;
+    }
+
+   
     
 
     

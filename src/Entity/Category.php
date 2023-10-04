@@ -46,6 +46,11 @@ class Category
         return $this;
     }
 
+    public function __toString()
+    {
+        return $this->name; 
+    }
+
     public function getCourse(): ?Course
     {
         return $this->course;

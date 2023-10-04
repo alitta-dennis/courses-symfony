@@ -2,34 +2,21 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use App\Repository\AdminRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Annotations as OA;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Entity(repositoryClass: AdminRepository::class)]
+class Admin implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-
-    /**
-     
-     * @OA\Property(description="The unique identifier of the user.")
-     */
     private ?int $id = null;
 
-    /**
-     * @OA\Property(type="string", maxLength=255)
-     */
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
-
-    // #[ORM\Column(type: 'string', length: 180)]
-    // private $username;
 
     #[ORM\Column]
     private array $roles = [];
@@ -40,11 +27,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    //#[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
-    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private ?Cart $cart = null;
-
-   
     public function getId(): ?int
     {
         return $this->id;
@@ -61,19 +43,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-
-    // public function getUsername(): string
-    // {
-    //     return (string) $this->username;
-    // }
- 
-    // public function setUsername(string $username): self
-    // {
-    //     $this->username = $username;
- 
-    //     return $this;
-    // }
 
     /**
      * A visual identifier that represents this user.
@@ -127,22 +96,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
-
-    public function getCart(): ?Cart
-    {
-        return $this->cart;
-    }
-
-    public function setCart(?Cart $cart): static
-    {   
-        // if ($cart->getUserId() !== $this) {
-        //     $cart->setUserId($this);
-        // }
-
-        $this->cart = $cart;
-
-        return $this;
-    }
-
-   
 }

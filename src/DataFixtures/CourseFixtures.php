@@ -18,7 +18,8 @@ class CourseFixtures extends Fixture
         $course->setStarRating(3.5);
         $course->setImageUrl('https://www.zdnet.com/a/img/resize/1b0f3a471607ff123236026b04b964e1853ed41b/2023/04/05/e0478a88-b3ed-4516-8459-e0b919b4b2bc/artificial-intelligence.jpg?auto=webp&fit=crop&height=900&width=1200');
         $course->setCategory($this->getReference('category1'));
-
+        $manager->persist($course);
+        
         $course1=new Course();
         $course1->setcourseName('Cybersecurity');
         $course1->setCourseCode('cst456');
@@ -26,7 +27,7 @@ class CourseFixtures extends Fixture
         $course1->setPrice(10);
         $course1->setStarRating(3.5);
         $course1->setImageUrl('https://www.kaspersky.co.in/content/en-in/images/repository/isc/2017-images/What-is-Cyber-Security.jpg');
-        $course->setCategory($this->getReference('category1'));
+        $course1->setCategory($this->getReference('category1'));
         
         $manager->persist($course1);
         $manager->flush();
