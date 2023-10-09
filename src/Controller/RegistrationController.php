@@ -16,13 +16,18 @@ use Nelmio\ApiDocBundle\Annotation\Security;
 use OpenApi\Annotations as OA;
 
 
-/**
- * @Route("/api", name="api_")
- */
-  
+
+// /**
+//  * @OA\Response(
+//  *      response=200,
+//  *      description="User Registered"
+//  *      @Model(type=user::class)
+//  * @OA\Tag(name="register")
+//  * @Route("/api/register"),name="app_register",methods={"POST"})
+//  */
 class RegistrationController extends AbstractController{
 
-    #[Route('/register',name:'app_register',methods:['POST'])]
+    #[Route('/api/register',name:'app_register',methods:['POST'])]
     public function register(Request $request, EntityManagerInterface $em, MailerInterface $mailer):JsonResponse
     {   
         $data=json_decode($request->getContent(),true);
@@ -36,7 +41,7 @@ class RegistrationController extends AbstractController{
             $em->persist($user);
             $em->flush();
             $this->sendMail($user,$mailer);
-            return new JsonResponse(['message'=>'User Registered'],201);
+            return new JsonResponse(['message'=>'User Registered'],200);
 
     }
 

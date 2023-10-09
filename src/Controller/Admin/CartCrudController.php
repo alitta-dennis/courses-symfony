@@ -22,8 +22,8 @@ class CartCrudController extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
            
-            AssociationField::new('username', 'User'), 
-            AssociationField::new('courses', 'Course')
+            AssociationField::new('user', 'User'), 
+            AssociationField::new('course', 'Course')
             ->autocomplete()
             ->setFormTypeOptions([
                 'multiple' => true,

@@ -42,7 +42,7 @@ class Course
     private ?Category $category = null;
 
 
-    #[ORM\ManyToMany(targetEntity: Cart::class, mappedBy: 'Course')]
+    #[ORM\ManyToMany(targetEntity: Cart::class, mappedBy: 'course', cascade:['persist'])]
     private Collection $carts;
 
     public function __construct()

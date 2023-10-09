@@ -83,6 +83,12 @@
     "nelmio/cors-bundle": {
         "version": "2.3.1"
     },
+    "phpunit/phpunit": {
+        "version": "9.6",
+        "recipe": {
+            "version": "9.6"
+        }
+    },
     "sensio/framework-extra-bundle": {
         "version": "6.2",
         "recipe": {
@@ -151,6 +157,12 @@
             "branch": "main",
             "version": "1.0",
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
+        }
+    },
+    "symfony/phpunit-bridge": {
+        "version": "6.3",
+        "recipe": {
+            "version": "6.3"
         }
     },
     "symfony/routing": {

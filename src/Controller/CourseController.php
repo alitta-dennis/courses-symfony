@@ -37,19 +37,40 @@ class CourseController extends AbstractController
      * @Security(name="Bearer")
      * @Route("/api/courses", name="get_courses", methods={"GET"})
      */
-    public function getCourses(): JsonResponse
+    public function getCourses(Request $request, CourseRepository $courseRepository): JsonResponse
     {   
-        
-        
-        $courses=$this->courseRepository->findAll();
-        
-
+        $page=$request->query->getInt('page',1);
+        $size=$request->query->getInt('size',10);
+        $courses=$courseRepository->findBy([],null,$size,($page-1)*$size);
+        // $paginator=$courseRepository->paginate($page,$size);
+        // $data=[];
+        // foreach($paginator as $item){
+        //     $data[]=[
+        //         'id'=>$item->getId(),
+        //         'name'=>$item->getCourseName(),
+        //         'price'=>$item->getPrice(),
+        //         'startDate'=>$item->getStartDate(),
+        //     ];
+        // }
+        // $response= new JsonResponse([
+        //     'data'=>$data,
+        //     'pagination'=>[
+        //         'page'=>$page,
+        //         'size'=>$size,
+        //         'total'=>$paginator->count(),
+        //     ],
+        // ]);
+         //$courses=$courseRepository->findAll();
         $coursesArray=[];
         foreach ($courses as $course ){
             $coursesData=$this->serializeCourses($course);
             $coursesArray[]=$coursesData;
         }
-        return new JsonResponse($coursesArray);
+
+        $total=count($courseRepository->findAll());
+    return new JsonResponse([
+        'data'=>$coursesArray,
+        'total'=>$total]);
     }
 
     // #[Route('/api/courses/{id}', name: 'courses_get',methods:['GET'])]
@@ -215,33 +236,33 @@ class CourseController extends AbstractController
         return new JsonResponse(['message'=>'Course Edited','user'=>$user], JsonResponse::HTTP_CREATED);
     }
 
-    // #[Route('/api/courses/img/{id}',name:'edit_img',methods:['POST'])]
+    #[Route('/api/courses/img/{id}',name:'edit_img',methods:['POST'])]
 
-    /**
-     * @OA\Response(
-     *     response=201,
-     *     description="Edits a Course when image is being changed",
-     *     @Model(type=Course::class)
-     * )
-     * @OA\RequestBody(
-     *     required=true,
-     *     @OA\JsonContent(
-     *         type="object",
-     *         @OA\Property(property="courseName", type="string"),
-     *         @OA\Property(property="courseCode", type="string"),
-     *         @OA\Property(property="startDate", type="string", format="date"),
-     *         
-     *         @OA\Property(property="price", type="number"),
-     *         @OA\Property(property="starRating", type="number"),
-     *         @OA\Property(property="categoryName", type="string"),
-     *         @OA\Property(property="categoryId", type="integer"),
-     *         @OA\Property(property="image", type="string", format="binary"),
-     *     )
-     * )
-     * @OA\Tag(name="Courses")
-     * @Security(name="Bearer")
-     * @Route("/api/courses/img/{id}", name="edit_coursewithimg", methods={"POST"})
-     */
+    // /**
+    //  * @OA\Response(
+    //  *     response=201,
+    //  *     description="Edits a Course when image is being changed",
+    //  *     @Model(type=Course::class)
+    //  * )
+    //  * @OA\RequestBody(
+    //  *     required=true,
+    //  *     @OA\JsonContent(
+    //  *         type="object",
+    //  *         @OA\Property(property="courseName", type="string"),
+    //  *         @OA\Property(property="courseCode", type="string"),
+    //  *         @OA\Property(property="startDate", type="string", format="date"),
+    //  *         
+    //  *         @OA\Property(property="price", type="number"),
+    //  *         @OA\Property(property="starRating", type="number"),
+    //  *         @OA\Property(property="categoryName", type="string"),
+    //  *         @OA\Property(property="categoryId", type="integer"),
+    //  *         @OA\Property(property="image", type="string", format="binary"),
+    //  *     )
+    //  * )
+    //  * @OA\Tag(name="Courses")
+    //  * @Security(name="Bearer")
+    //  * @Route("/api/courses/img/{id}", name="edit_img", methods={"POST"})
+    //  */
     public function editWithImg($id, Request $request):JsonResponse
     {
         $courses=$this->courseRepository->find($id);
@@ -293,7 +314,7 @@ class CourseController extends AbstractController
         return new JsonResponse(['message'=>'Course Edited'],JsonResponse::HTTP_OK);
     }
 
-    // #[Route('/api/courses/{id}',name:'delete',methods:['GET','DELETE'])]
+    // #[Route('/api/courses/{id}',name:'delete',methods:['DELETE'])]
     /**
      * @OA\Response(
      *     response=200,

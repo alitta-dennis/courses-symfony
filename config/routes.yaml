@@ -7,6 +7,31 @@ controllers:
 api_login:
     path: /api/login
 
+delete:
+    path: /api/cart/delete/{id}
+    controller: App\Controller\CartController::delete
+    methods: [POST]
+
+app_register:
+    path: /api/register
+    controller: App\Controller\RegistrationController::register
+    methods: [POST]
+
+edit_img:
+    path: /api/courses/img/{id}
+    controller: App\Controller\CourseController::editWithImg
+    methods: [POST]
+
+app_category:
+    path: /api/category
+    controller: App\Controller\CategoryController::getCategory
+    methods: [GET]
+
+view:
+    path: api/cart/view
+    controller: App\Controller\CartController::view
+    methods: [GET]
+
 
 app.swagger_ui:
     path: /api/doc

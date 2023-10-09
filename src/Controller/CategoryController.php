@@ -34,9 +34,9 @@ class CategoryController extends AbstractController
     //  * @Security(name="Bearer")
     //  * @Route("/api/category", name="get_categories", methods={"GET"})
     //  */
-    public function getCategory(): JsonResponse
+    public function getCategory(CategoryRepository $categoryRepository): JsonResponse
     {
-        $categories=$this->categoryRepository->findAll();
+        $categories=$categoryRepository->findAll();
         $data=[];
         foreach($categories as $category)
         {
@@ -48,7 +48,7 @@ class CategoryController extends AbstractController
         return new JsonResponse($data);
     }
 
-    // #[Route('/api/category/{id}', name: 'category', methods:['GET'])]
+     #[Route('/api/category/{id}', name: 'category', methods:['GET'])]
      /**
      * @OA\Response(
      *     response=200,
@@ -74,7 +74,7 @@ class CategoryController extends AbstractController
      * @Security(name="Bearer")
      * @Route("/api/category/{id}", name="category", methods={"GET"})
      */
-    public function getCoursesbyCategory($id)
+    public function getCoursesbyCategory($id):JsonResponse
     {
         $categories=$this->categoryRepository->find($id);
         $courses=$categories->getCourses();

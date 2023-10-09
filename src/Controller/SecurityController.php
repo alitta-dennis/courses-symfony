@@ -44,12 +44,11 @@ class SecurityController extends AbstractController
      *     description="Invalid password"
      * )
      * @OA\Tag(name="Login")
-     * @Route("/api/login", name="login", methods={"POST"})
+     * @Route("/api/login", name="app_login", methods={"POST"})
      */
 
-    // /**
-    //  * @Route("/api/login", name="app_login", methods={"POST"})
-    //  */
+    
+    //#[Route('/api/login', name: 'app_login',methods:['POST'])]
     public function login(Request $request, UserPasswordHasherInterface $pwd, TokenStorageInterface $tokenStorage): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
