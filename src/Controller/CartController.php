@@ -131,7 +131,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
         }
 
         $courses=$cart->getCourse();
-
+        $total=0;
         $coursesArray[]=[];
         foreach ($courses as $course)
         {
@@ -147,11 +147,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
                     'imageUrl'=>$course->getimageUrl()
 
                 ];
+                $total=$total+$course->getprice();
         }
         
         return $this->json([
             'email'=>$user->getEmail(),
              'courses'=>$coursesArray,
+             'amount'=>$total,
         ],200);
 
     }
