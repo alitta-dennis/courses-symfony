@@ -40,7 +40,7 @@ class CourseController extends AbstractController
     public function getCourses(Request $request, CourseRepository $courseRepository): JsonResponse
     {   
         $page=$request->query->getInt('page',1);
-        $size=$request->query->getInt('size',10);
+        $size=$request->query->getInt('size',5);
         $courses=$courseRepository->findBy([],null,$size,($page-1)*$size);
         // $paginator=$courseRepository->paginate($page,$size);
         // $data=[];
@@ -266,6 +266,7 @@ class CourseController extends AbstractController
     public function editWithImg($id, Request $request):JsonResponse
     {
         $courses=$this->courseRepository->find($id);
+        $baseUrl="http://127.0.0.1:8000";
 
         if(!$courses){
             return new JsonResponse(['error'=>'Course not found'],Response::HTTP_NOT_FOUND);
@@ -285,7 +286,7 @@ class CourseController extends AbstractController
             $uploadsDirectory=$this->getParameter('kernel.project_dir').'/public/uploads';
             $imgName=md5(uniqid()).'.'.$img->guessExtension();
             $img->move($uploadsDirectory,$imgName);
-            $imageUrl='/uploads/' . $imgName;
+            $imageUrl=$baseUrl.'/uploads/' . $imgName;
         }
 
         if($coursename!=null){
@@ -314,17 +315,17 @@ class CourseController extends AbstractController
         return new JsonResponse(['message'=>'Course Edited'],JsonResponse::HTTP_OK);
     }
 
-    // #[Route('/api/courses/{id}',name:'delete',methods:['DELETE'])]
-    /**
-     * @OA\Response(
-     *     response=200,
-     *     description="Delete a courses",
-     *     @Model(type=Course::class)
-     * )
-     * @OA\Tag(name="Courses")
-     * @Security(name="Bearer")
-     * @Route("/api/courses/{id}", name="delete", methods={"DELETE"})
-     */
+     #[Route('/api/courses/{id}',name:'deletecourse',methods:['DELETE'])]
+    // /**
+    //  * @OA\Response(
+    //  *     response=200,
+    //  *     description="Delete a courses",
+    //  *     @Model(type=Course::class)
+    //  * )
+    //  * @OA\Tag(name="Courses")
+    //  * @Security(name="Bearer")
+    //  * @Route("/api/courses/{id}", name="delete", methods={"DELETE"})
+    //  */
 
     public function deleteCourse($id):Response{
 

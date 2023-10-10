@@ -22,10 +22,7 @@ edit_img:
     controller: App\Controller\CourseController::editWithImg
     methods: [POST]
 
-app_category:
-    path: /api/category
-    controller: App\Controller\CategoryController::getCategory
-    methods: [GET]
+
 
 view:
     path: api/cart/view
