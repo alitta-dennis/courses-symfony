@@ -18,11 +18,15 @@ class CartCrudController extends AbstractCrudController
 
     
     public function configureFields(string $pageName): iterable
-    {
+    {   
+        //$userAssociationField = AssociationField::new('user', 'User');
+        //$userAssociationField->addCssClass('my-custom-class');
         return [
             IdField::new('id')->hideOnForm(),
-           
-            AssociationField::new('user', 'User'), 
+            //$userAssociationField,
+            AssociationField::new('email', 'User'), 
+            //dump($cart->getUser()),
+            //dump($user),
             AssociationField::new('course', 'Course')
             ->autocomplete()
             ->setFormTypeOptions([

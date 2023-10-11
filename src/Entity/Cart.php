@@ -6,6 +6,7 @@ use App\Repository\CartRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: CartRepository::class)]
 class Cart
@@ -19,14 +20,17 @@ class Cart
     private Collection $course;
 
     // #[ORM\OneToOne(mappedBy: 'cart', cascade: ['persist', 'remove'])]
+    
+ 
     #[ORM\OneToOne(inversedBy: 'cart', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?User $email = null;
 
     public function __construct()
     {
         $this->course = new ArrayCollection();
     }
+    
 
     public function getId(): ?int
     {
@@ -57,16 +61,22 @@ class Cart
         return $this;
     }
 
-    public function getUserId(): ?User
+    
+     public function getEmail(): ?User
     {
-        return $this->user;
+        
+        return $this->email;
     }
+    // public function __toString()
+    //     {
+    //         return $this->getUser(); // Replace with the actual property you want to display.
+    //     }
 
-    public function setUserId(?User $user): static
+    public function setEmail(?User $user): static
     {
         // unset the owning side of the relation if necessary
-        if ($user === null && $this->user !== null) {
-            $this->user->setCart(null);
+        if ($user === null && $this->email !== null) {
+            $this->email->setCart(null);
         }
 
         // set the owning side of the relation if necessary
@@ -74,8 +84,12 @@ class Cart
             $user->setCart($this);
         }
 
-        $this->user = $user;
+        $this->email = $user;
 
         return $this;
     }
+    // public function __toString()
+    // {
+    //     return $this->userId;
+    // }
 }

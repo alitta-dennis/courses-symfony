@@ -66,7 +66,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
         if(!$cart)
         {
             $cart=new Cart();
-            $cart->setUserId($user);
+            $cart->setEmail($user);
         }
         $cart->addCourse($course);
         $this->em->persist($cart);
